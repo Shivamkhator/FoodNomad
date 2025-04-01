@@ -1,0 +1,58 @@
+
+
+{% block content %}
+    <h1>Nearby Grocery Stores</h1>
+    
+    <button id="fetch-btn" onclick="getLocationAndFetchStores()">Find Stores Near Me</button>
+    
+    <ul id="store-list"></ul>
+
+    <script>
+        function getLocationAndFetchStores() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (position) {
+                        let lat = position.coords.latitude;
+                        let lon = position.coords.longitude;
+
+                        // Change the URL to match the path in urls.py
+                        fetch(`/recommendations/shops/?lat=${lat}&lon=${lon}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log("Nearby Grocery Stores:", data);
+                                displayStores(data);
+                            })
+                            .catch(error => console.error("Error fetching stores:", error));
+                    },
+                    function (error) {
+                        console.error("Error getting location:", error);
+                        alert("Location access denied. Please allow location services.");
+                    }
+                );
+            } else {
+                alert("Geolocation is not supported by your browser.");
+            }
+        }
+
+        function displayStores(stores) {
+            let list = document.getElementById("store-list");
+            list.innerHTML = "";  // Clear previous list
+
+            if (stores.length === 0) {
+                list.innerHTML = "<p>No stores found nearby.</p>";
+                return;
+            }
+
+            stores.forEach(store => {
+                let item = document.createElement("li");
+                item.className = "store-item";
+                item.innerHTML = `
+                    <p><strong>${store.name}</strong></p>
+                    <p>${store.distance_km} km away</p>
+                    <a href="${store.google_maps_url}" target="_blank">View on Google Maps</a>
+                `;
+                list.appendChild(item);
+            });
+        }
+    </script>
+{% endblock %}
