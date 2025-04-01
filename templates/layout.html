@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Title Block -->
+    <title>{% block title %}My Website{% endblock %}</title>
+
+    <!-- Style Block -->
+    <style>
+        {% block style %}
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        nav {
+            background-color: #444;
+            padding: 0.5rem;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            display: inline-block;
+        }
+
+        nav a:hover {
+            background-color: #555;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        {% endblock %}
+    </style>
+</head>
+<body>
+
+    <header>
+        {% block header %}Welcome to My Website{% endblock %}
+    </header>
+
+    <nav>
+        <a href="#">Home</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+        {% if user.is_authenticated %}
+            <a href="#">Logout</a>
+        {% else %}
+            <a href="#">Login</a>
+        {% endif %}
+    </nav>
+
+    <main>
+        {% block body %}
+        <h1>Welcome!</h1>
+        <p>This is the default content.</p>
+        {% endblock %}
+    </main>
+
+    <footer>
+        {% block footer %}&copy; 2025 My Website | All Rights Reserved{% endblock %}
+    </footer>
+
+</body>
+</html>
