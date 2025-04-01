@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block body %}
+    <h1>Recipe List</h1>
+
+    {% if recipes %}
+        <ul>
+            {% for recipe in recipes %}
+                <li>
+                    <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+                    <p>{{ recipe.description }}</p>
+                    {% if recipe.image %}
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 100px; height: auto;">
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recipes found. Start by adding a new recipe!</p>
+        <a href="{% url 'create_recipe' %}" style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
+            Create a New Recipe
+        </a>
+    {% endif %}
+
+{% endblock %}
