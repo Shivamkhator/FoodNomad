@@ -1,3 +1,4 @@
+{% load socialaccount%}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +16,9 @@
             margin: 0;
             padding: 0;
             background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         header {
@@ -42,6 +46,7 @@
         }
 
         main {
+            flex: 1;
             padding: 20px;
             text-align: center;
         }
@@ -51,9 +56,7 @@
             color: white;
             text-align: center;
             padding: 1rem;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
+            margin-top: auto;
         }
         {% endblock %}
     </style>
@@ -61,17 +64,17 @@
 <body>
 
     <header>
-        {% block header %}Welcome to My Website{% endblock %}
+        {% block header %} Welcome{% if user.is_authenticated %}, {{ user.first_name }}{% endif %} {% endblock %}
     </header>
 
     <nav>
-        <a href="#">Home</a>
+        <a href="{% url 'home' %}">Home</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
         {% if user.is_authenticated %}
-            <a href="#">Logout</a>
+            <a href="{% url 'account_logout' %}?next={{request.path}}">Logout</a>
         {% else %}
-            <a href="#">Login</a>
+        <a href="{% provider_login_url 'google' %}?next={{ request.path}}">Login</a>
         {% endif %}
     </nav>
 
@@ -86,5 +89,6 @@
         {% block footer %}&copy; 2025 My Website | All Rights Reserved{% endblock %}
     </footer>
 
+    {% block scripts %}{% endblock %}
 </body>
 </html>

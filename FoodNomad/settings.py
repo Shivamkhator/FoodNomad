@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'recommendations',
     'recipes',
-    'users',
     'django.contrib.sites',
     "allauth",
     "allauth.account",
@@ -136,6 +135,8 @@ USE_TZ = True
 SITE_ID = 3  # Default site ID for Django sites framework
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
+
+ACCOUNT_LOGOUT_ON_GET = True
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
