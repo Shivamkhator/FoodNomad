@@ -2,25 +2,25 @@
 {% load static %}
 
 {% block body %}
-    <h1>Recipe List</h1>
-
+   <div class="container">
+    <h2>All Recipes</h2>
+    
     {% if recipes %}
         <ul>
             {% for recipe in recipes %}
                 <li>
-                    <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
-                    <p>{{ recipe.description }}</p>
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="width: 100px; height: auto;">
-                    {% endif %}
+                    <h3><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h3>
+                    <p><strong>Author:</strong> {{ recipe.author.username }}</p>
+                    <p><strong>Vegetarian:</strong> {% if recipe.vegetarian %} Yes {% else %} No {% endif %}</p>
+                    <p><strong>Created on:</strong> {{ recipe.created_at|date:"F d, Y" }}</p>
+                    <a href="{% url 'update_recipe' recipe.id %}">Edit</a> | 
+                    <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No recipes found. Start by adding a new recipe!</p>
-        <a href="{% url 'create_recipe' %}" style="display: inline-block; padding: 10px 15px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">
-            Create a New Recipe
-        </a>
+        <p>No recipes available. <a href="{% url 'create_recipe' %}">Create one!</a></p>
     {% endif %}
+</div>
 
 {% endblock %}

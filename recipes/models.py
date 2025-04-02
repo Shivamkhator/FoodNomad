@@ -13,11 +13,27 @@ class Recipe(models.Model):
     def __str__(self):
         return self.title
 
+
 class Ingredient(models.Model):
-    recipe = models.ForeignKey(Recipe, related_name='ingredients', on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    quantity = models.CharField(max_length=50)
-    nutritional_info = models.TextField(blank=True)
+    fats = models.FloatField(default=0.0)  # Default value
+    carbohydrates = models.FloatField(default=0.0)  # Default value
+    proteins = models.FloatField(default=0.0)  # Default value
+    calories = models.FloatField(default=0.0)  # Default value
+    sugar = models.FloatField(default=0.0)  # Default value
 
     def __str__(self):
-        return f"{self.quantity} of {self.name} for {self.recipe.title}"
+        return self.name
+
+
+    def __str__(self):
+        return self.name
+
+
+class IngredientQuantity(models.Model):
+    recipe = models.ForeignKey(Recipe, related_name='ingredients', on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)  # Corrected field name
+    quantity = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.ingredient.name} for {self.recipe.title}"

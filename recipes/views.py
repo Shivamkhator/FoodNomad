@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .models import Recipe, Ingredient
+from .models import Recipe, Ingredient, IngredientQuantity
 
 def home(request):
     return HttpResponse("Recipes Page!")
@@ -16,14 +16,16 @@ def create_recipe(request):
         vegetarian = request.POST.get('vegetarian') == 'on'
         ingredients_list = request.POST.getlist('ingredients')  # User-submitted ingredients
 
+        # Create recipe
         recipe = Recipe.objects.create(
             title=title, description=description, instructions=instructions, 
             author=request.user, vegetarian=vegetarian
         )
 
-        # Adding ingredients (without nutritional info)
-        for ingredient in ingredients_list:
-            Ingredient.objects.create(recipe=recipe, name=ingredient, quantity="1 unit")  # Default quantity
+        # Adding ingredients (ensure correct linking via IngredientQuantity)
+        for ingredient_name in ingredients_list:
+            ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
+            IngredientQuantity.objects.create(recipe=recipe, ingredient=ingredient, quantity="1 unit")
 
         messages.success(request, "Recipe created successfully!")
         return redirect('display_recipes')
@@ -36,13 +38,13 @@ def display_recipes(request):
 
 def recipe_detail(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-    ingredients = recipe.ingredients.all()
+    ingredients = IngredientQuantity.objects.filter(recipe=recipe)
     return render(request, 'recipe_detail.html', {'recipe': recipe, 'ingredients': ingredients})
 
 @login_required
 def update_recipe(request, recipe_id):
     recipe = get_object_or_404(Recipe, id=recipe_id)
-
+    
     # Ensure only the author or an admin can edit
     if request.user != recipe.author and not request.user.is_superuser:
         messages.error(request, "You are not authorized to update this recipe.")

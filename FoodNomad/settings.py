@@ -89,9 +89,13 @@ WSGI_APPLICATION = 'FoodNomad.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+     'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres.ywbevktagamfhiwbfeft',
+        'PASSWORD': 'Sh1v@m2005',
+        'HOST': 'aws-0-us-east-2.pooler.supabase.com',  # e.g., db.qktiazptcluapxgoflrf.supabase.co
+        'PORT': '6543',  # default port for PostgreSQL
     }
 }
 
@@ -129,7 +133,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_ID = 2  # Default site ID for Django sites framework
+SITE_ID = 3  # Default site ID for Django sites framework
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 
