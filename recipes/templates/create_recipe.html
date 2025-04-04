@@ -1,49 +1,541 @@
-{% extends 'layout.html' %}
-{% load static %}
+{% load socialaccount %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      {% block title %}Cookly - Recipe Recommendation System{% endblock %}
+    </title>
+    <style>
+      /* Reset and base styles */
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-{% block title %}Create Recipe{% endblock %}
+      body {
+          background-color: #f9f9f9;
+          color: #333;
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+      }
 
-{% block body %}
-<form method="POST" enctype="multipart/form-data">
-  {% csrf_token %}
-  
-  <input type="text" name="title" placeholder="Title"><br>
-  <textarea name="description" placeholder="Description"></textarea><br>
-  <textarea name="instructions" placeholder="Instructions"></textarea><br>
-  <label><input type="checkbox" name="vegetarian"> Vegetarian</label><br>
+      /* Header styles */
+      header {
+          background-color: white;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          padding: 15px 5%;
+          position: sticky;
+          top: 0;
+          z-index: 100;
+      }
 
-  <label>Image:</label>
-  <input type="file" name="image"><br><br>
+      nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+      }
 
-  <div id="ingredients-container">
-    <div class="ingredient-row">
-      <input type="text" name="ingredient_name" placeholder="Ingredient">
-      <input type="text" name="ingredient_quantity" placeholder="Quantity">
-      <button type="button" onclick="removeRow(this)">Remove</button>
-    </div>
-  </div>
-  <button type="button" onclick="addRow()">Add Ingredient</button><br><br>
+      .logo {
+          display: flex;
+          align-items: center;
+          font-size: 24px;
+          font-weight: bold;
+          color: #333;
+          text-decoration: none;
+      }
 
-  <button type="submit">Submit</button>
-</form>
+      .logo-icon {
+          margin-right: 8px;
+      }
 
-<script>
-function addRow() {
-  const container = document.getElementById('ingredients-container');
-  const div = document.createElement('div');
-  div.className = 'ingredient-row';
-  div.innerHTML = `
-    <input type="text" name="ingredient_name" placeholder="Ingredient">
-    <input type="text" name="ingredient_quantity" placeholder="Quantity">
-    <button type="button" onclick="removeRow(this)">Remove</button>
-  `;
-  container.appendChild(div);
-}
+      .nav-links {
+          display: flex;
+          gap: 30px;
+      }
 
-function removeRow(button) {
-  button.parentElement.remove();
-}
-</script>
+      .nav-links a {
+          text-decoration: none;
+          color: #555;
+          transition: color 0.3s;
+      }
 
+      .nav-links a:hover {
+          color: #ff6b35;
+      }
 
-{% endblock %}
+      .contact-btn {
+          background-color: #2d3142;
+          color: white;
+          border: none;
+          padding: 8px 20px;
+          border-radius: 25px;
+          cursor: pointer;
+          transition: background-color 0.3s, transform 0.2s;
+      }
+
+      .contact-btn:hover {
+          background-color: #1a1d29;
+          transform: scale(1.05);
+      }
+
+      /* Main content */
+      main {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+      }
+
+      /* Hero section */
+      .hero {
+          display: flex;
+          align-items: center;
+          padding: 40px 5%;
+          min-height: 500px;
+      }
+
+      .hero-content {
+          flex: 1;
+          padding-right: 40px;
+      }
+
+      .hero-title {
+          font-size: 42px;
+          color: #2d3142;
+          margin-bottom: 20px;
+          line-height: 1.2;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.5s, transform 0.5s;
+      }
+
+      .hero-text {
+          color: #666;
+          font-size: 18px;
+          margin-bottom: 30px;
+          line-height: 1.5;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.5s, transform 0.5s;
+      }
+
+      .hero-buttons {
+          display: flex;
+          gap: 15px;
+          margin-top: 30px;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.5s, transform 0.5s;
+      }
+
+      .primary-btn {
+          background-color: white;
+          color: #333;
+          border: 2px solid #e0e0e0;
+          padding: 12px 30px;
+          border-radius: 25px;
+          font-weight: 600;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      .primary-btn:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .secondary-btn {
+          background-color: #ff6b35;
+          color: white;
+          border: none;
+          padding: 12px 30px;
+          border-radius: 25px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: transform 0.3s, background-color 0.3s;
+      }
+
+      .secondary-btn:hover {
+          background-color: #e55a27;
+          transform: translateY(-3px);
+      }
+
+      .circle-icon {
+          display: inline-block;
+          width: 20px;
+          height: 20px;
+          background-color: #ff6b35;
+          border-radius: 50%;
+          margin-left: 10px;
+          opacity: 0;
+          transform: translateY(20px);
+          transition: transform 0.5s, opacity 0.5s;
+      }
+
+      .hero-image {
+          flex: 1;
+          position: relative;
+          height: 100%;
+      }
+
+      .food-image {
+          width: 100%;
+          max-width: 500px;
+          border-radius: 20px;
+          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Food elements animation */
+      .food-element {
+          position: absolute;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          opacity: 0;
+          animation: float 6s ease-in-out infinite;
+      }
+
+      .element-1 {
+          background-color: #8EB14F;
+          top: 20%;
+          left: 10%;
+          animation-delay: 0s;
+      }
+
+      .element-2 {
+          background-color: #FFB347;
+          top: 15%;
+          right: 25%;
+          animation-delay: 1s;
+      }
+
+      .element-3 {
+          background-color: #8EB14F;
+          bottom: 30%;
+          left: 5%;
+          animation-delay: 2s;
+      }
+
+      .element-4 {
+          background-color: #8EB14F;
+          bottom: 10%;
+          right: 15%;
+          animation-delay: 3s;
+      }
+
+      @keyframes float {
+          0% {
+              transform: translateY(20px) rotate(0deg);
+              opacity: 0;
+          }
+          20% {
+              opacity: 0.8;
+          }
+          80% {
+              opacity: 0.8;
+          }
+          100% {
+              transform: translateY(-20px) rotate(360deg);
+              opacity: 0;
+          }
+      }
+
+      /* Content blocks */
+      .content {
+          padding: 20px 5%;
+      }
+
+      /* Footer styles */
+      footer {
+          background-color: #2d3142;
+          color: #fff;
+          padding: 40px 5%;
+          margin-top: auto;
+      }
+
+      .footer-content {
+          display: flex;
+          justify-content: space-between;
+          flex-wrap: wrap;
+          max-width: 1200px;
+          margin: 0 auto;
+      }
+
+      .footer-column {
+          flex: 1;
+          min-width: 200px;
+          margin-bottom: 20px;
+      }
+
+      .footer-column h3 {
+          font-size: 18px;
+          margin-bottom: 15px;
+          color: #fff;
+      }
+
+      .footer-column ul {
+          list-style: none;
+      }
+
+      .footer-column ul li {
+          margin-bottom: 10px;
+      }
+
+      .footer-column a {
+          color: #ddd;
+          text-decoration: none;
+          transition: color 0.3s;
+      }
+
+      .footer-column a:hover {
+          color: #ff6b35;
+      }
+
+      .social-icons {
+          display: flex;
+          gap: 15px;
+          margin-top: 10px;
+      }
+
+      .social-icon {
+          width: 40px;
+          height: 40px;
+          background-color: #444;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: white;
+          transition: background-color 0.3s, transform 0.3s;
+      }
+
+      .social-icon:hover {
+          background-color: #ff6b35;
+          transform: translateY(-3px);
+      }
+
+      .copyright {
+          text-align: center;
+          padding: 20px 0;
+          margin-top: 30px;
+          border-top: 1px solid #444;
+          color: #aaa;
+      }
+
+      /* Responsive design */
+      @media (max-width: 768px) {
+          .hero {
+              flex-direction: column;
+              text-align: center;
+          }
+
+          .hero-content {
+              padding-right: 0;
+              margin-bottom: 40px;
+          }
+
+          .hero-buttons {
+              justify-content: center;
+          }
+
+          .footer-column {
+              flex: 1 0 50%;
+          }
+
+          .nav-links {
+              display: none;
+          }
+      }
+
+      {% block style %}{% endblock %}
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="{% url 'home' %}" class="logo">
+          <span class="logo-icon">🍳</span>
+          Cookly
+        </a>
+        <div class="nav-links">
+          <a href="{% url 'home' %}">Home</a>
+          <a href="{% url 'display_recipes' %}">Recipes</a>
+          <a href="{% url 'stores' %}">Find a Store</a>
+          {% if user.is_authenticated %}
+          <a href="{% url 'account_logout' %}?next={{request.path}}">Logout</a>
+          <span style="color: #555; margin-left: 15px"
+            >Welcome, {{ user.first_name }}</span
+          >
+          {% else %}
+          <a href="{% provider_login_url 'google' %}?next={{ request.path}}"
+            >Login</a
+          >
+          {% endif %}
+        </div>
+        <button class="contact-btn">Contact</button>
+      </nav>
+    </header>
+
+    <main>
+      {% block body %}
+      <section class="hero">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            Welcome to our Food Recipe Recommendation System
+          </h1>
+          <p class="hero-text">
+            Discover personalized recipe suggestions based on your ingredient
+            preferences
+          </p>
+
+          <div class="hero-buttons">
+            <a class="primary-btn decoration-none " style="text-decoration:none;" href="{% url 'display_recipes' %}">
+              Explore Recipes <span class="circle-icon"></span>
+            </a>
+
+            <a class="secondary-btn" style="text-decoration:none;" href="{% url 'filtered_recipes' %}">
+              Cook with This
+            </a>
+          </div>
+        </div>
+
+        {% comment %}
+        <div class="hero-image">
+          <img
+            src="/api/placeholder/500/500"
+            alt="Delicious food bowl"
+            class="food-image"
+          />
+          <div class="food-element element-1"></div>
+          <div class="food-element element-2"></div>
+          <div class="food-element element-3"></div>
+          <div class="food-element element-4"></div>
+        </div>
+        {% endcomment %}
+      </section>
+
+      <section class="content">
+        <!-- Additional content can go here -->
+      </section>
+      {% endblock %}
+    </main>
+
+    <footer>
+      {% block footer %}
+      <div class="footer-content">
+        <div class="footer-column">
+          <h3>Cookly</h3>
+          <p>
+            Personalized recipe suggestions for food lovers. Discover new dishes
+            based on what you have in your kitchen.
+          </p>
+          <div class="social-icons">
+            <a href="#" class="social-icon">f</a>
+            <a href="#" class="social-icon">t</a>
+            <a href="#" class="social-icon">in</a>
+            <a href="#" class="social-icon">ig</a>
+          </div>
+        </div>
+
+        <div class="footer-column">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="{% url 'home' %}">Home</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Popular Recipes</a></li>
+            <li><a href="#">Submit Recipe</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Categories</h3>
+          <ul>
+            <li><a href="#">Breakfast</a></li>
+            <li><a href="#">Lunch</a></li>
+            <li><a href="#">Dinner</a></li>
+            <li><a href="#">Desserts</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-column">
+          <h3>Contact Us</h3>
+          <ul>
+            <li>Email: info@cookly.com</li>
+            <li>Phone: +1 (555) 123-4567</li>
+            <li>Address: 123 Cooking Street, Foodville</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="copyright">&copy; 2025 Cookly. All rights reserved.</div>
+      {% endblock %}
+    </footer>
+
+    {% block scripts %}
+    <script>
+      // Animation for the circle icon when hovering over the button
+      document
+        .querySelector(".primary-btn")
+        .addEventListener("mouseenter", function () {
+          const circleIcon = this.querySelector(".circle-icon");
+          circleIcon.style.opacity = "1";
+          circleIcon.style.transform = "translateY(0)";
+        });
+
+      document
+        .querySelector(".primary-btn")
+        .addEventListener("mouseleave", function () {
+          const circleIcon = this.querySelector(".circle-icon");
+          circleIcon.style.opacity = "0";
+          circleIcon.style.transform = "translateY(20px)";
+        });
+
+      // Animation for page load
+      window.addEventListener("load", function () {
+        // Animate food elements appearing
+        const foodElements = document.querySelectorAll(".food-element");
+        foodElements.forEach((element) => {
+          element.style.opacity = "1";
+        });
+
+        // Animate hero content
+        const heroTitle = document.querySelector(".hero-title");
+        const heroText = document.querySelector(".hero-text");
+        const heroButtons = document.querySelector(".hero-buttons");
+
+        setTimeout(() => {
+          heroTitle.style.opacity = "1";
+          heroTitle.style.transform = "translateY(0)";
+        }, 300);
+
+        setTimeout(() => {
+          heroText.style.opacity = "1";
+          heroText.style.transform = "translateY(0)";
+        }, 500);
+
+        setTimeout(() => {
+          heroButtons.style.opacity = "1";
+          heroButtons.style.transform = "translateY(0)";
+        }, 700);
+      });
+
+      // Add scroll animation
+      window.addEventListener("scroll", function () {
+        const scrolled = window.scrollY;
+        const foodImage = document.querySelector(".food-image");
+
+        // Parallax effect on scroll
+        if (foodImage) {
+          foodImage.style.transform = `translateY(${scrolled * 0.05}px)`;
+        }
+      });
+    </script>
+    {% endblock %}
+  </body>
+</html>

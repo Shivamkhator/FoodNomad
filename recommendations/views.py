@@ -3,6 +3,7 @@ import requests
 import time
 import math
 from django.http import JsonResponse
+from recipes.models import Recipe, Ingredient
 
 def home(request):
     return render(request ,'layout.html')
@@ -97,3 +98,27 @@ def get_nearby_grocery_stores(lat, lon, radius=3000, max_retries=3, timeout=10):
     stores.sort(key=lambda x: x["distance_km"])
     
     return stores
+
+
+def filtered_recipes(request):
+    selected_ingredients = request.GET.getlist('ingredients')
+    all_ingredients = Ingredient.objects.all()
+
+    if selected_ingredients:
+        # Convert to integers
+        selected_ingredients = list(map(int, selected_ingredients))
+
+        # Filter recipes that have all selected ingredients
+        recipes = Recipe.objects.all()
+        for ingredient_id in selected_ingredients:
+            recipes = recipes.filter(ingredients__ingredient__id=ingredient_id)
+        recipes = recipes.distinct()
+    else:
+        recipes = Recipe.objects.none()
+
+    context = {
+        'recipes': recipes,
+        'ingredients': all_ingredients,
+        'selected': selected_ingredients,
+    }
+    return render(request, 'filtered_recipes.html', context)

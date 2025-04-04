@@ -137,7 +137,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_ID = 2  # Default site ID for Django sites framework
+SITE_ID = 3 # Default site ID for Django sites framework
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 

@@ -2,58 +2,90 @@
 {% load static %}
 
 {% block body %}
-<div class="container" style="padding: 20px;">
+<style>
+    .containerz {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 30px;
+        color: #2c3e50;
+    }
+
+    ul.recipe-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .recipe-card {
+        background-color: #f9f9f9;
+        margin-bottom: 20px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .recipe-card:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .recipe-card h3 {
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #27ae60;
+    }
+
+    .recipe-card p {
+        margin: 6px 0;
+        color: #555;
+    }
+
+    .recipe-card a {
+        text-decoration: none;
+        color: #2980b9;
+        font-weight: bold;
+    }
+
+    .recipe-card a:hover {
+        text-decoration: underline;
+    }
+
+    .no-recipes {
+        text-align: center;
+        font-size: 1.1em;
+        margin-top: 50px;
+    }
+
+    .no-recipes a {
+        color: #27ae60;
+        font-weight: bold;
+    }
+</style>
+
+<div class="containerz">
     <h2>All Recipes</h2>
 
-    <!-- Filter Buttons -->
-    <div style="margin-bottom: 20px;">
-        <a href="{% url 'display_recipes' %}" class="btn {% if not filter_type %}active{% endif %}">All</a>
-        <a href="?type=veg" class="btn {% if filter_type == 'veg' %}active{% endif %}">Vegetarian</a>
-        <a href="?type=nonveg" class="btn {% if filter_type == 'nonveg' %}active{% endif %}">Non-Vegetarian</a>
-    </div>
-
     {% if recipes %}
-        <ul style="list-style: none; padding: 0;">
+        <ul class="recipe-list">
             {% for recipe in recipes %}
-                <li style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
-                    <h3>
-                        <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
-                    </h3>
+                <li class="recipe-card">
+                    <h3><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h3>
                     <p><strong>Author:</strong> {{ recipe.author.username }}</p>
-                    <p><strong>Vegetarian:</strong> {{ recipe.vegetarian|yesno:"Yes,No" }}</p>
+                    <p><strong>Vegetarian:</strong> {% if recipe.vegetarian %} Yes {% else %} No {% endif %}</p>
                     <p><strong>Created on:</strong> {{ recipe.created_at|date:"F d, Y" }}</p>
-
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 200px; border-radius: 5px; margin: 10px 0;">
-                    {% endif %}
-
-                    <p>
-                        <a href="{% url 'update_recipe' recipe.id %}">Edit</a> | 
-                        <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
-                    </p>
+                    <a href="{% url 'update_recipe' recipe.id %}">Edit</a> |
+                    <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
                 </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p>No recipes available. <a href="{% url 'create_recipe' %}">Create one!</a></p>
+        <p class="no-recipes">No recipes available. <a href="{% url 'create_recipe' %}">Create one!</a></p>
     {% endif %}
 </div>
-
-<!-- Optional styling for active filter -->
-<style>
-    .btn {
-        padding: 8px 15px;
-        margin-right: 10px;
-        border: 1px solid #888;
-        border-radius: 5px;
-        text-decoration: none;
-        background-color: #eee;
-        color: #000;
-    }
-    .btn.active {
-        background-color: #007b5e;
-        color: white;
-        font-weight: bold;
-    }
-</style>
 {% endblock %}

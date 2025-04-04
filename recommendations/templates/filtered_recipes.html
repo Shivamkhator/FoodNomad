@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container" style="padding: 20px;">
+    <h2>Filter Recipes by Ingredients</h2>
+
+    <!-- Filter Form -->
+    <form method="get" action="{% url 'filtered_recipes' %}">
+        <fieldset style="margin-bottom: 20px; border: 1px solid #ccc; padding: 15px; border-radius: 8px;">
+            <legend>Select Ingredients:</legend>
+            {% for ingredient in ingredients %}
+                <label style="margin-right: 10px;">
+                    <input type="checkbox" name="ingredients" value="{{ ingredient.id }}"
+                        {% if ingredient.id in selected %}checked{% endif %}>
+                    {{ ingredient.name }}
+                </label>
+            {% endfor %}
+            <br><br>
+            <button type="submit" class="btn">Filter</button>
+        </fieldset>
+    </form>
+
+    <!-- Filtered Results -->
+    {% if recipes %}
+        <h3>Filtered Recipes:</h3>
+        <ul style="list-style: none; padding: 0;">
+            {% for recipe in recipes %}
+                <li style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+                    <h4>
+                        <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+                    </h4>
+                    <p><strong>Author:</strong> {{ recipe.author.username }}</p>
+                    <p><strong>Vegetarian:</strong> {{ recipe.vegetarian|yesno:"Yes,No" }}</p>
+                    <p><strong>Created on:</strong> {{ recipe.created_at|date:"F d, Y" }}</p>
+                    
+                    {% if recipe.image %}
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 200px; border-radius: 5px; margin: 10px 0;">
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No recipes found for the selected ingredients.</p>
+    {% endif %}
+</div>
+
+<style>
+    .btn {
+        padding: 8px 15px;
+        border: 1px solid #888;
+        border-radius: 5px;
+        text-decoration: none;
+        background-color: #007b5e;
+        color: white;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
