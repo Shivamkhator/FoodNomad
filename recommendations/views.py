@@ -5,7 +5,10 @@ import math
 from django.http import JsonResponse
 
 def home(request):
-    return render(request ,'recommendations/stores.html')
+    return render(request ,'layout.html')
+
+def stores(request):
+    return render(request, 'stores.html')
 
 
 def haversine(lat1, lon1, lat2, lon2):

@@ -4,8 +4,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import Recipe, Ingredient, IngredientQuantity
 
-def home(request):
-    return HttpResponse("Recipes Page!")
 
 @login_required
 def create_recipe(request):
