@@ -7,4 +7,5 @@ urlpatterns = [
     path('recommendations/', include('recommendations.urls')),
     path('recipes/', include('recipes.urls')),
     path('accounts/', include('allauth.urls')),
+    path('',include('recommendations.urls')),
 ]

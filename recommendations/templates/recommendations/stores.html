@@ -5,169 +5,420 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nearby Grocery Stores</title>
     <style>
+        
         :root {
-            --primary-color: #4CAF50;
-            --primary-dark: #388E3C;
-            --accent-color: #FF9800;
+            --primary-color: #33ff33;
+            --primary-dark: #a32832;
+            --accent-color: rgb(236,146,16);       
+            --background-color: #fffaf0;        /* Light Cream */
             --text-color: #333;
             --light-gray: #f5f5f5;
-            --shadow: 0 2px 5px rgba(0,0,0,0.1);
-            --radius: 8px;
+            --shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+            --font-family: 'Quicksand', 'Segoe UI', sans-serif;
         }
-       
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            background-color: #f9f9f9;
+            font-family: var(--font-family);
+        }
+        
+        body {
+            background-color: var(--background-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
             color: var(--text-color);
-            line-height: 1.6;
         }
-       
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-       
+        
+        /* Header */
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 20px 0;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border-radius: 0 0 var(--radius) var(--radius);
-        }
-       
-        h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-       
-        .search-container {
-            background-color: white;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: var(--radius);
+            width: 100%;
+            padding: 1.0rem 0;
+            margin-bottom: 2rem;
             box-shadow: var(--shadow);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+        
+        /* Intro text */
+        p {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-dark);
+            margin-bottom: 18px;
             text-align: center;
         }
-       
+        
+        /* Button */
         button {
-            background-color: var(--primary-color);
+            background-color: var(--accent-color);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 14px 20px;
             font-size: 1rem;
-            border-radius: 50px;
+            font-weight: 500;
+            border-radius: 30px;
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+            margin: 0 auto 30px auto;
             display: flex;
             align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            box-shadow: var(--shadow);
         }
-       
+        
         button:hover {
-            background-color: var(--primary-dark);
+            background-color: #ff6f61;
             transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+        }
+        
+        button:disabled {
+            cursor: not-allowed;
+            background-color: #ddd;
+            color: #999;
+            opacity: 0.6;
+        }
+        
+        /* Store List */
+        #store-list {
+            list-style: none;
+            width: 100%;
+            max-width: 700px;
+            padding: 0;
+        }
+        
+        /* Individual Store Item */
+        .store-item {
+            background-color: white;
+            padding: 20px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 6px solid var(--primary-color);
+            box-shadow: var(--shadow);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .store-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+        }
+        
+        /* Store Info */
+        .store-info {
+            flex: 1;
+        }
+        
+        .store-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+            color: var(--primary-dark);
+        }
+        
+        .store-distance {
+            font-size: 0.95rem;
+            color: #555;
+            display: flex;
+            align-items: center;
+        }
+        
+        .store-distance svg {
+            margin-right: 6px;
+            fill: var(--accent-color);
+        }
+        
+        /* Store Actions */
+        .store-actions {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .map-link {
+            text-decoration: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.3s;
+        }
+        
+        .map-link:hover {
+            color: var(--primary-dark);
+        }
+        
+        
+        .container {
+            margin: 0 auto;
+            padding: 8px;
         }
        
-        button:active {
-            transform: translateY(0);
-        }
-       
-        button svg {
-            margin-right: 8px;
-        }
-       
-        .loader {
+        .loadingspinner {
+            --square: 16px;
+            --offset: 18px;
+            --duration: 2s;
+            --delay: 0.2s;
+            --timing-function: ease-in-out;
+            --in-duration: 0.4s;
+            --in-delay: 0.1s;
+            --in-timing-function: ease-out;
+            width: calc( 3 * var(--offset) + var(--square));
+            height: calc( 2 * var(--offset) + var(--square));
+            padding: 0px;
+            margin-left: auto;
+            margin-right: auto;
+            margin-top: 10px;
+            margin-bottom: 30px;
+            position: relative;
             display: none;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--primary-color);
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
-        }
-       
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-       
+          }
+          
+          .loadingspinner div {
+            display: inline-block;
+            background: darkorange;
+              /*background: var(--text-color);*/
+              /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);*/
+            border: none;
+            border-radius: 2px;
+            width: var(--square);
+            height: var(--square);
+            position: absolute;
+            padding: 0px;
+            margin: 0px;
+            font-size: 6pt;
+            color: black;
+          }
+          
+          .loadingspinner #square1 {
+            left: calc( 0 * var(--offset) );
+            top: calc( 0 * var(--offset) );
+            animation: square1 var(--duration) var(--delay) var(--timing-function) infinite,
+                         squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+          }
+          
+          .loadingspinner #square2 {
+            left: calc( 0 * var(--offset) );
+            top: calc( 1 * var(--offset) );
+            animation: square2 var(--duration) var(--delay) var(--timing-function) infinite,
+                        squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+          }
+          
+          .loadingspinner #square3 {
+            left: calc( 1 * var(--offset) );
+            top: calc( 1 * var(--offset) );
+            animation: square3 var(--duration) var(--delay) var(--timing-function) infinite,
+                         squarefadein var(--in-duration) calc(2 * var(--in-delay)) var(--in-timing-function) both;
+          }
+          
+          .loadingspinner #square4 {
+            left: calc( 2 * var(--offset) );
+            top: calc( 1 * var(--offset) );
+            animation: square4 var(--duration) var(--delay) var(--timing-function) infinite,
+                         squarefadein var(--in-duration) calc(3 * var(--in-delay)) var(--in-timing-function) both;
+          }
+          
+          .loadingspinner #square5 {
+            left: calc( 3 * var(--offset) );
+            top: calc( 1 * var(--offset) );
+            animation: square5 var(--duration) var(--delay) var(--timing-function) infinite,
+                         squarefadein var(--in-duration) calc(4 * var(--in-delay)) var(--in-timing-function) both;
+          }
+          
+          @keyframes square1 {
+            0% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            8.333% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            100% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          }
+          
+          @keyframes square2 {
+            0% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            8.333% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            16.67% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            25.00% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            83.33% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            91.67% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            100% {
+              left: calc( 0 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          }
+          
+          @keyframes square3 {
+            0%,100% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            16.67% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            25.00% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            33.33% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            41.67% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            66.67% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            75.00% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            83.33% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            91.67% {
+              left: calc( 1 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          }
+          
+          @keyframes square4 {
+            0% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            33.33% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            41.67% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            50.00% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 2 * var(--offset) );
+            }
+          
+            58.33% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            100% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          }
+          
+          @keyframes square5 {
+            0% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            50.00% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            58.33% {
+              left: calc( 3 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            66.67% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 0 * var(--offset) );
+            }
+          
+            75.00% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          
+            100% {
+              left: calc( 2 * var(--offset) );
+              top: calc( 1 * var(--offset) );
+            }
+          }
+          
+          @keyframes squarefadein {
+            0% {
+              transform: scale(0.75);
+              opacity: 0.0;
+            }
+          
+            100% {
+              transform: scale(1.0);
+              opacity: 1.0;
+            }
+          }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
        
-        #store-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
        
-        .store-item {
-            background-color: white;
-            margin-bottom: 15px;
-            padding: 20px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            transition: transform 0.2s;
-            border-left: 5px solid var(--primary-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-       
-        .store-item:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-        }
-       
-        .store-info {
-            flex: 1;
-        }
-       
-        .store-name {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-            color: var(--primary-dark);
-        }
-       
-        .store-distance {
-            color: #666;
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-       
-        .store-distance svg {
-            margin-right: 5px;
-        }
-       
-        .store-actions {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-        }
-       
-        .map-link {
-            display: inline-flex;
-            align-items: center;
-            color: var(--accent-color);
-            text-decoration: none;
-            font-weight: 500;
-            margin-top: 8px;
-            transition: color 0.2s;
-        }
-       
-        .map-link:hover {
-            color: #F57C00;
-            text-decoration: underline;
-        }
        
         .map-link svg {
             margin-right: 5px;
@@ -214,121 +465,139 @@
     </header>
    
     <div class="container">
-        <div class="search-container">
-            <p>Find grocery stores near your current location</p>
-            <button id="fetch-btn" onclick="getLocationAndFetchStores()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    <line x1="11" y1="8" x2="11" y2="14"></line>
-                    <line x1="8" y1="11" x2="14" y2="11"></line>
-                </svg>
-                Find Stores Near Me
+        <div class="container">
+            <p>Missing Few groceries? Find nearby grocery stores to get your essentials.</p>
+            
+            <button id="fetch-btn" onclick="getLocationAndFetchStores()" aria-label="Find grocery stores near me">
+                Find Nearby Stores
             </button>
         </div>
        
-        <div id="error-message" class="error-message"></div>
-        <div id="loader" class="loader"></div>
+        <div id="error-message" class="error-message" role="alert"></div>
+        <div class="loadingspinner">
+            <div id="square1"></div>
+            <div id="square2"></div>
+            <div id="square3"></div>
+            <div id="square4"></div>
+            <div id="square5"></div>
+          </div>
        
-        <ul id="store-list"></ul>
+        <ul id="store-list" aria-live="polite"></ul>
     </div>
    
     <script>
-        function getLocationAndFetchStores() {
+        // API Configuration
+        const API_BASE_URL = '/recommendations/shops/'; // Consider making this configurable
+        
+        async function getLocationAndFetchStores() {
             const errorMessage = document.getElementById('error-message');
-            const loader = document.getElementById('loader');
+            const loader = document.querySelector('.loadingspinner'); // Fixed selector to match the HTML
             const fetchBtn = document.getElementById('fetch-btn');
-           
+            const storeList = document.getElementById('store-list');
+        
             // Reset UI
             errorMessage.style.display = 'none';
             errorMessage.textContent = '';
-            document.getElementById('store-list').innerHTML = '';
-           
+            storeList.innerHTML = '';
+        
             // Show loader and disable button
-            loader.style.display = 'block';
+            loader.style.display = 'block'; // Changed from visibility to display
             fetchBtn.disabled = true;
-            fetchBtn.style.opacity = '0.7';
-           
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    function (position) {
-                        let lat = position.coords.latitude;
-                        let lon = position.coords.longitude;
-                       
-                        fetch(`/recommendations/shops/?lat=${lat}&lon=${lon}`)
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                return response.json();
-                            })
-                            .then(data => {
-                                console.log("Nearby Grocery Stores:", data);
-                                displayStores(data);
-                            })
-                            .catch(error => {
-                                console.error("Error fetching stores:", error);
-                                errorMessage.textContent = "Error fetching nearby stores. Please try again.";
-                                errorMessage.style.display = 'block';
-                            })
-                            .finally(() => {
-                                // Hide loader and enable button
-                                loader.style.display = 'none';
-                                fetchBtn.disabled = false;
-                                fetchBtn.style.opacity = '1';
-                            });
-                    },
-                    function (error) {
-                        console.error("Error getting location:", error);
-                        let errorText = "Location access denied. Please enable location services in your browser.";
-                       
-                        if (error.code === 1) {
-                            errorText = "Location access denied. Please allow location services for this website.";
-                        } else if (error.code === 2) {
-                            errorText = "Location unavailable. Please try again later.";
-                        } else if (error.code === 3) {
-                            errorText = "Location request timed out. Please try again.";
-                        }
-                       
-                        errorMessage.textContent = errorText;
-                        errorMessage.style.display = 'block';
-                       
-                        // Hide loader and enable button
-                        loader.style.display = 'none';
-                        fetchBtn.disabled = false;
-                        fetchBtn.style.opacity = '1';
-                    }
-                );
-            } else {
-                errorMessage.textContent = "Geolocation is not supported by your browser.";
-                errorMessage.style.display = 'block';
-               
-                // Hide loader and enable button
-                loader.style.display = 'none';
-                fetchBtn.disabled = false;
-                fetchBtn.style.opacity = '1';
+        
+            if (!navigator.geolocation) {
+                showError("Geolocation is not supported by your browser.");
+                return;
             }
+        
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    
+                    const apiUrl = new URL(API_BASE_URL, window.location.origin);
+                    apiUrl.searchParams.append('lat', lat);
+                    apiUrl.searchParams.append('lon', lon);
+        
+                    try {
+                        const response = await fetch(apiUrl);
+                        
+                        if (!response.ok) {
+                            throw new Error(getErrorMessage(response.status));
+                        }
+        
+                        const data = await response.json();
+                        console.log("Nearby Grocery Stores:", data);
+                        displayStores(data);
+                    } catch (error) {
+                        showError(error.message || "Error fetching nearby stores. Please try again.");
+                    } finally {
+                        loader.style.display = 'none'; // Changed from visibility to display
+                        fetchBtn.disabled = false;
+                    }
+                },
+                (error) => {
+                    showError(getGeolocationErrorMessage(error.code));
+                    loader.style.display = 'none'; // Also hide loader on geolocation error
+                }
+            );
         }
+        
+        // Helper function to show errors - updated to handle loader correctly
+        function showError(message) {
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        
+            document.querySelector('.loadingspinner').style.display = 'none'; // Fixed selector and property
+            document.getElementById('fetch-btn').disabled = false;
+        }
+        
+        // Error message mapping
+        function getErrorMessage(status) {
+            const errorMap = {
+                404: "Store service not found. Please try again later.",
+                500: "Server error. Our team has been notified."
+            };
+            return errorMap[status] || `Network error: ${status}`;
+        }
+        
+        // Geolocation error mapping
+        function getGeolocationErrorMessage(code) {
+            const geoErrorMap = {
+                1: "Location access denied. Please allow location services for this website.",
+                2: "Location unavailable. Please try again later.",
+                3: "Location request timed out. Please try again."
+            };
+            return geoErrorMap[code] || "Location access denied. Please enable location services.";
+        }
+        
        
         function displayStores(stores) {
             let list = document.getElementById("store-list");
             list.innerHTML = "";  // Clear previous list
            
-            if (stores.length === 0) {
-                list.innerHTML = '<div class="no-stores"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg><p>No grocery stores found nearby.</p></div>';
+            if (!Array.isArray(stores) || stores.length === 0) {
+                list.innerHTML = '<div class="no-stores" role="status"><svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s-8-4.5-8-11.8A8 8 0 0 1 12 2a8 8 0 0 1 8 8.2c0 7.3-8 11.8-8 11.8z"/><circle cx="12" cy="10" r="3"/></svg><p>No grocery stores found nearby.</p></div>';
                 return;
             }
            
             stores.forEach((store, index) => {
-                let distance = parseFloat(store.distance_km).toFixed(1);
+                // Data validation
+                if (!store || !store.name) {
+                    return;
+                }
+                
+                const distance = parseFloat(store.distance_km || 0).toFixed(1);
+                const mapsUrl = store.google_maps_url || '#';
                
                 let item = document.createElement("li");
                 item.className = "store-item";
+                item.setAttribute("aria-label", `${store.name}, ${distance} kilometers away`);
                 item.innerHTML = `
                     <div class="store-info">
-                        <div class="store-name">${store.name}</div>
+                        <div class="store-name">${escapeHtml(store.name)}</div>
                         <div class="store-distance">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
@@ -336,8 +605,8 @@
                         </div>
                     </div>
                     <div class="store-actions">
-                        <a href="${store.google_maps_url}" target="_blank" class="map-link">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <a href="${escapeHtml(mapsUrl)}" target="_blank" rel="noopener noreferrer" class="map-link" aria-label="View ${escapeHtml(store.name)} on Google Maps">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <polygon points="3 11 22 2 13 21 11 13 3 11"></polygon>
                             </svg>
                             View on Maps
@@ -363,6 +632,7 @@
                 list.appendChild(item);
             });
         }
+       
     </script>
 </body>
 </html>
