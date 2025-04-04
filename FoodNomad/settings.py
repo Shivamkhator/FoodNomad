@@ -2,12 +2,17 @@
 from pathlib import Path
 import os
 from dotenv import load_dotenv
-
+from django.conf import settings
+from django.conf.urls.static import static
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv()
 
+import os
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -132,7 +137,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-SITE_ID = 3  # Default site ID for Django sites framework
+SITE_ID = 2  # Default site ID for Django sites framework
 
 SOCIALACCOUNT_LOGIN_ON_GET = True
 

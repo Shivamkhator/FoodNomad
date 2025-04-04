@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block body %}
+<div class="container" style="padding: 30px;">
+    <div style="background: #fff; padding: 25px; border-radius: 10px; box-shadow: 0 0 8px rgba(0,0,0,0.1);">
+
+        <h2 style="font-size: 2rem; margin-bottom: 10px;">{{ recipe.title }}</h2>
+
+        <p><strong>Author:</strong> {{ recipe.author.username }}</p>
+        <p><strong>Vegetarian:</strong> {{ recipe.vegetarian|yesno:"Yes,No" }}</p>
+        <p><strong>Created On:</strong> {{ recipe.created_at|date:"F j, Y" }}</p>
+
+        {% if recipe.image %}
+            <div style="margin: 20px 0;">
+                <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 100%; height: auto; border-radius: 8px;">
+            </div>
+        {% endif %}
+
+        <hr>
+
+        <h3>Description</h3>
+        <p>{{ recipe.description }}</p>
+
+        <h3>Ingredients</h3>
+        {% if ingredients %}
+            <ul>
+                {% for item in ingredients %}
+                    <li>{{ item.ingredient.name }} — {{ item.quantity }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No ingredients listed.</p>
+        {% endif %}
+
+        <h3>Instructions</h3>
+        <p>{{ recipe.instructions }}</p>
+
+        <hr>
+
+        <div style="margin-top: 20px;">
+            <a href="{% url 'update_recipe' recipe.id %}" class="btn btn-warning">Edit</a>
+            <a href="{% url 'delete_recipe' recipe.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this recipe?')">Delete</a>
+            <a href="{% url 'display_recipes' %}" class="btn btn-secondary">Back to Recipes</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
