@@ -7,6 +7,9 @@ from django.http import JsonResponse
 def home(request):
     return render(request ,'layout.html')
 
+def stores(request):
+    return render(request, 'stores.html')
+
 
 def haversine(lat1, lon1, lat2, lon2):
     R = 6371  # Earth's radius in km
