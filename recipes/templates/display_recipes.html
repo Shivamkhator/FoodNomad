@@ -2,19 +2,35 @@
 {% load static %}
 
 {% block body %}
-   <div class="container">
+<div class="container" style="padding: 20px;">
     <h2>All Recipes</h2>
-    
+
+    <!-- Filter Buttons -->
+    <div style="margin-bottom: 20px;">
+        <a href="{% url 'display_recipes' %}" class="btn {% if not filter_type %}active{% endif %}">All</a>
+        <a href="?type=veg" class="btn {% if filter_type == 'veg' %}active{% endif %}">Vegetarian</a>
+        <a href="?type=nonveg" class="btn {% if filter_type == 'nonveg' %}active{% endif %}">Non-Vegetarian</a>
+    </div>
+
     {% if recipes %}
-        <ul>
+        <ul style="list-style: none; padding: 0;">
             {% for recipe in recipes %}
-                <li>
-                    <h3><a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a></h3>
+                <li style="border: 1px solid #ccc; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+                    <h3>
+                        <a href="{% url 'recipe_detail' recipe.id %}">{{ recipe.title }}</a>
+                    </h3>
                     <p><strong>Author:</strong> {{ recipe.author.username }}</p>
-                    <p><strong>Vegetarian:</strong> {% if recipe.vegetarian %} Yes {% else %} No {% endif %}</p>
+                    <p><strong>Vegetarian:</strong> {{ recipe.vegetarian|yesno:"Yes,No" }}</p>
                     <p><strong>Created on:</strong> {{ recipe.created_at|date:"F d, Y" }}</p>
-                    <a href="{% url 'update_recipe' recipe.id %}">Edit</a> | 
-                    <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+
+                    {% if recipe.image %}
+                        <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}" style="max-width: 200px; border-radius: 5px; margin: 10px 0;">
+                    {% endif %}
+
+                    <p>
+                        <a href="{% url 'update_recipe' recipe.id %}">Edit</a> | 
+                        <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+                    </p>
                 </li>
             {% endfor %}
         </ul>
@@ -23,4 +39,21 @@
     {% endif %}
 </div>
 
+<!-- Optional styling for active filter -->
+<style>
+    .btn {
+        padding: 8px 15px;
+        margin-right: 10px;
+        border: 1px solid #888;
+        border-radius: 5px;
+        text-decoration: none;
+        background-color: #eee;
+        color: #000;
+    }
+    .btn.active {
+        background-color: #007b5e;
+        color: white;
+        font-weight: bold;
+    }
+</style>
 {% endblock %}

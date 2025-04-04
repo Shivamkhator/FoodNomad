@@ -12,26 +12,29 @@ def create_recipe(request):
         description = request.POST.get('description')
         instructions = request.POST.get('instructions')
         vegetarian = request.POST.get('vegetarian') == 'on'
-        ingredients_list = request.POST.getlist('ingredients')  # User-submitted ingredients
+        image = request.FILES.get('image')
 
-        # Create recipe
         recipe = Recipe.objects.create(
-            title=title, description=description, instructions=instructions, 
-            author=request.user, vegetarian=vegetarian
+            title=title, description=description, instructions=instructions,
+            author=request.user, vegetarian=vegetarian, image=image
         )
 
-        # Adding ingredients (ensure correct linking via IngredientQuantity)
-        for ingredient_name in ingredients_list:
-            ingredient, created = Ingredient.objects.get_or_create(name=ingredient_name)
-            IngredientQuantity.objects.create(recipe=recipe, ingredient=ingredient, quantity="1 unit")
+        ingredient_names = request.POST.getlist('ingredient_name')
+        ingredient_quantities = request.POST.getlist('ingredient_quantity')
+
+        for name, quantity in zip(ingredient_names, ingredient_quantities):
+            ingredient, _ = Ingredient.objects.get_or_create(name=name)
+            IngredientQuantity.objects.create(
+                recipe=recipe, ingredient=ingredient, quantity=quantity
+            )
 
         messages.success(request, "Recipe created successfully!")
         return redirect('display_recipes')
-    
+
     return render(request, 'create_recipe.html')
 
 def display_recipes(request):
-    recipes = Recipe.objects.all()
+    recipes = Recipe.objects.all().order_by('-created_at')  # shows latest first
     return render(request, 'display_recipes.html', {'recipes': recipes})
 
 def recipe_detail(request, recipe_id):
