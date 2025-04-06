@@ -1,13 +1,16 @@
 {% load socialaccount %}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
-      {% block title %}Cookly - Recipe Recommendation System{% endblock %}
+      {% block title %}FoodNomad{% endblock %}
     </title>
+    {% block style %}
     <style>
+
       /* Reset and base styles */
       * {
           margin: 0;
@@ -47,11 +50,10 @@
           font-weight: bold;
           color: #333;
           text-decoration: none;
+          margin-right: 8px;
+
       }
 
-      .logo-icon {
-          margin-right: 8px;
-      }
 
       .nav-links {
           display: flex;
@@ -68,20 +70,286 @@
           color: #ff6b35;
       }
 
-      .contact-btn {
-          background-color: #2d3142;
+
+    .links a {
+        text-decoration: none;
+        color: #555;
+        transition: color 0.3s;
+    }
+
+    .links a:hover {
+        color: #ff6b35;
+    }
+
+      .log-in-out-btn {
+          background-color: #ff6b35;
           color: white;
           border: none;
+          margin: 0;
           padding: 8px 20px;
           border-radius: 25px;
           cursor: pointer;
           transition: background-color 0.3s, transform 0.2s;
+          text-decoration: none;
+          font-weight: 600;
       }
 
-      .contact-btn:hover {
-          background-color: #1a1d29;
+      .log-in-out-btn:hover {
+          background-color: #e55a27;
           transform: scale(1.05);
       }
+
+      .loadingspinner {
+        --square: 16px;
+        --offset: 18px;
+        --duration: 2s;
+        --delay: 0.2s;
+        --timing-function: ease-in-out;
+        --in-duration: 0.4s;
+        --in-delay: 0.1s;
+        --in-timing-function: ease-out;
+        width: calc( 3 * var(--offset) + var(--square));
+        height: calc( 2 * var(--offset) + var(--square));
+        padding: 0px;
+        margin-left: auto;
+        margin-right: auto;
+        margin-top: 10px;
+        margin-bottom: 30px;
+        position: relative;
+        display: none;
+      }
+      
+      .loadingspinner div {
+        display: inline-block;
+        background: darkorange;
+          /*background: var(--text-color);*/
+          /*box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.4);*/
+        border: none;
+        border-radius: 2px;
+        width: var(--square);
+        height: var(--square);
+        position: absolute;
+        padding: 0px;
+        margin: 0px;
+        font-size: 6pt;
+        color: black;
+      }
+      
+      .loadingspinner #square1 {
+        left: calc( 0 * var(--offset) );
+        top: calc( 0 * var(--offset) );
+        animation: square1 var(--duration) var(--delay) var(--timing-function) infinite,
+                     squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+      }
+      
+      .loadingspinner #square2 {
+        left: calc( 0 * var(--offset) );
+        top: calc( 1 * var(--offset) );
+        animation: square2 var(--duration) var(--delay) var(--timing-function) infinite,
+                    squarefadein var(--in-duration) calc(1 * var(--in-delay)) var(--in-timing-function) both;
+      }
+      
+      .loadingspinner #square3 {
+        left: calc( 1 * var(--offset) );
+        top: calc( 1 * var(--offset) );
+        animation: square3 var(--duration) var(--delay) var(--timing-function) infinite,
+                     squarefadein var(--in-duration) calc(2 * var(--in-delay)) var(--in-timing-function) both;
+      }
+      
+      .loadingspinner #square4 {
+        left: calc( 2 * var(--offset) );
+        top: calc( 1 * var(--offset) );
+        animation: square4 var(--duration) var(--delay) var(--timing-function) infinite,
+                     squarefadein var(--in-duration) calc(3 * var(--in-delay)) var(--in-timing-function) both;
+      }
+      
+      .loadingspinner #square5 {
+        left: calc( 3 * var(--offset) );
+        top: calc( 1 * var(--offset) );
+        animation: square5 var(--duration) var(--delay) var(--timing-function) infinite,
+                     squarefadein var(--in-duration) calc(4 * var(--in-delay)) var(--in-timing-function) both;
+      }
+      
+      @keyframes square1 {
+        0% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        8.333% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        100% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      }
+      
+      @keyframes square2 {
+        0% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        8.333% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        16.67% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        25.00% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        83.33% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        91.67% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        100% {
+          left: calc( 0 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      }
+      
+      @keyframes square3 {
+        0%,100% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        16.67% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        25.00% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        33.33% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        41.67% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        66.67% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        75.00% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        83.33% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        91.67% {
+          left: calc( 1 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      }
+      
+      @keyframes square4 {
+        0% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        33.33% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        41.67% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        50.00% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 2 * var(--offset) );
+        }
+      
+        58.33% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        100% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      }
+      
+      @keyframes square5 {
+        0% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        50.00% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        58.33% {
+          left: calc( 3 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        66.67% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 0 * var(--offset) );
+        }
+      
+        75.00% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      
+        100% {
+          left: calc( 2 * var(--offset) );
+          top: calc( 1 * var(--offset) );
+        }
+      }
+      
+      @keyframes squarefadein {
+        0% {
+          transform: scale(0.75);
+          opacity: 0.0;
+        }
+      
+        100% {
+          transform: scale(1.0);
+          opacity: 1.0;
+        }
+      }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
       /* Main content */
       main {
@@ -99,6 +367,11 @@
       }
 
       .hero-content {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          width: 60%;
           flex: 1;
           padding-right: 40px;
       }
@@ -179,17 +452,127 @@
       }
 
       .hero-image {
-          flex: 1;
           position: relative;
+          flex: 1;
           height: 100%;
+          left: 90%;
       }
 
-      .food-image {
-          width: 100%;
-          max-width: 500px;
-          border-radius: 20px;
-          box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      }
+      h1 {
+        font-size: 2.2rem;
+        letter-spacing: 1px;
+    }
+    
+    /* Intro text */
+    p {
+        font-size: 1.2rem;
+        font-weight: 500;
+        color: var(--primary-dark);
+        margin-bottom: 18px;
+        text-align: center;
+    }
+    
+    /* Button */
+    button {
+        background-color: #ff6f61;
+        color: black;
+        border: none;
+        padding: 14px 20px;
+        font-size: 1rem;
+        font-weight: 500;
+        border-radius: 30px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: var(--shadow);
+        margin: auto auto;
+        display: flex;
+        align-items: center;
+    }
+    
+    button:hover {
+        background-color: #ff6f61;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
+    
+    button:disabled {
+        cursor: not-allowed;
+        background-color: #ddd;
+        color: #999;
+        opacity: 0.6;
+    }
+    
+    /* Store List */
+    #store-list {
+        list-style: none;
+        width: 100%;
+        max-width: 700px;
+        padding: 0;
+    }
+    
+    /* Individual Store Item */
+    .store-item {
+        background-color: white;
+        padding: 20px 24px;
+        border-radius: var(--radius);
+        margin-bottom: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-left: 6px solid var(--primary-color);
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    
+    .store-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+    }
+    
+    /* Store Info */
+    .store-info {
+        flex: 1;
+    }
+    
+    .store-name {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 6px;
+        color: var(--primary-dark);
+    }
+    
+    .store-distance {
+        font-size: 0.95rem;
+        color: #555;
+        display: flex;
+        align-items: center;
+    }
+    
+    .store-distance svg {
+        margin-right: 6px;
+        fill: var(--accent-color);
+    }
+    
+    /* Store Actions */
+    .store-actions {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .map-link {
+        text-decoration: none;
+        color: var(--primary-color);
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: color 0.3s;
+    }
+    
+    .map-link:hover {
+        color: var(--primary-dark);
+    }
+    
 
       /* Food elements animation */
       .food-element {
@@ -228,6 +611,7 @@
           right: 15%;
           animation-delay: 3s;
       }
+      
 
       @keyframes float {
           0% {
@@ -306,7 +690,6 @@
       .social-icon {
           width: 40px;
           height: 40px;
-          background-color: #444;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -316,7 +699,6 @@
       }
 
       .social-icon:hover {
-          background-color: #ff6b35;
           transform: translateY(-3px);
       }
 
@@ -340,6 +722,7 @@
               margin-bottom: 40px;
           }
 
+
           .hero-buttons {
               justify-content: center;
           }
@@ -353,33 +736,37 @@
           }
       }
 
-      {% block style %}{% endblock %}
     </style>
+          {% endblock %}
+
   </head>
   <body>
     <header>
+      {%block nav%}
       <nav>
-        <a href="{% url 'home' %}" class="logo">
-          <span class="logo-icon">🍳</span>
-          Cookly
+        <a href="{% url 'home' %}" class="logo">          
+          FoodNomad
         </a>
         <div class="nav-links">
           <a href="{% url 'home' %}">Home</a>
           <a href="{% url 'display_recipes' %}">Recipes</a>
           <a href="{% url 'stores' %}">Find a Store</a>
-          {% if user.is_authenticated %}
+          <div>{% if user.is_authenticated %}
+            <span style="color: #555; margin-left: 15px"
+              >Welcome, {{ user.first_name }}</span
+            >
+            {% endif %}</div>
+          
+        </div>
+        <button class="log-in-out-btn links">{% if user.is_authenticated %}
           <a href="{% url 'account_logout' %}?next={{request.path}}">Logout</a>
-          <span style="color: #555; margin-left: 15px"
-            >Welcome, {{ user.first_name }}</span
-          >
           {% else %}
           <a href="{% provider_login_url 'google' %}?next={{ request.path}}"
             >Login</a
           >
-          {% endif %}
-        </div>
-        <button class="contact-btn">Contact</button>
+          {% endif %}</button>
       </nav>
+      {% endblock %}
     </header>
 
     <main>
@@ -387,7 +774,7 @@
       <section class="hero">
         <div class="hero-content">
           <h1 class="hero-title">
-            Welcome to our Food Recipe Recommendation System
+            Welcome to our FoodNomad
           </h1>
           <p class="hero-text">
             Discover personalized recipe suggestions based on your ingredient
@@ -403,14 +790,14 @@
               Cook with This
             </a>
           </div>
-        </div>
+       
 
-        <div class="hero-image">
+        <div class=" hero-image">
           <img
             src="media/images/bowl.png"
             alt="Delicious food bowl"
-            class="food-image"
           />
+        </div>
         </div>
       </section>
 
@@ -430,49 +817,49 @@
             based on what you have in your kitchen.
           </p>
           <div class="social-icons">
-            <a href="#" class="social-icon">f</a>
-            <a href="#" class="social-icon">t</a>
-            <a href="#" class="social-icon">in</a>
-            <a href="#" class="social-icon">ig</a>
+            <!-- GitHub - Creator 1 -->
+            <a href="https://github.com/daWanderbee" class="social-icon" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="24" height="24">
+            </a>
+          
+            <!-- GitHub - Creator 2 -->
+            <a href="https://github.com/shivamKhator" class="social-icon" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" width="24" height="24">
+            </a>
+          
+            <!-- LinkedIn - Creator 1 -->
+            <a href="https://www.linkedin.com/in/asmitaOfficial" class="social-icon" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" width="24" height="24">
+            </a>
+          
+            <!-- LinkedIn - Creator 2 -->
+            <a href="https://www.linkedin.com/in/ShivamKhator" class="social-icon" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn-icons-png.flaticon.com/512/174/174857.png" alt="LinkedIn" width="24" height="24">
+            </a>
           </div>
-        </div>
-
-        <div class="footer-column">
-          <h3>Quick Links</h3>
-          <ul>
-            <li><a href="{% url 'home' %}">Home</a></li>
-            <li><a href="#">About Us</a></li>
-            <li><a href="#">Popular Recipes</a></li>
-            <li><a href="#">Submit Recipe</a></li>
-          </ul>
-        </div>
-
-        <div class="footer-column">
-          <h3>Categories</h3>
-          <ul>
-            <li><a href="#">Breakfast</a></li>
-            <li><a href="#">Lunch</a></li>
-            <li><a href="#">Dinner</a></li>
-            <li><a href="#">Desserts</a></li>
-          </ul>
+          
         </div>
 
         <div class="footer-column">
           <h3>Contact Us</h3>
           <ul>
-            <li>Email: info@cookly.com</li>
-            <li>Phone: +1 (555) 123-4567</li>
-            <li>Address: 123 Cooking Street, Foodville</li>
+            <li>Email: fake@foodnomad.com</li>
+            <li>Phone: +91 9876543210</li>
           </ul>
         </div>
       </div>
 
-      <div class="copyright">&copy; 2025 Cookly. All rights reserved.</div>
+      <div class="copyright"> Copyright &copy; 
+        <span id="year"></span> FoodNomad. All rights reserved.</div>
       {% endblock %}
     </footer>
 
     {% block scripts %}
     <script>
+
+      // Set the current year in the footer
+      document.getElementById("year").textContent = new Date().getFullYear();
+
       // Animation for the circle icon when hovering over the button
       document
         .querySelector(".primary-btn")

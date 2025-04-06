@@ -4,79 +4,228 @@
 {% block title %}{{ recipe.title }}{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <div class="card shadow">
-        <div class="card-header bg-primary text-white">
-            <h1 class="mb-0">{{ recipe.title }}</h1>
+<style>
+    .container {
+        max-width: 900px;
+        margin: 40px auto;
+        padding: 20px;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+        overflow: hidden;
+    }
+
+    .card-header {
+        background: #f5f5f5;
+        padding: 24px;
+        text-align: center;
+    }
+
+    .card-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+    }
+
+    .image-container {
+        background: #f0f0f0;
+        text-align: center;
+        padding: 20px;
+    }
+
+    .image-container img {
+        width: 100%;
+        max-height: 300px;
+        object-fit: cover;
+        border-radius: 10px;
+    }
+
+    .card-body {
+        padding: 30px;
+    }
+
+    .meta {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 4px 10px;
+        font-size: 0.9rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+
+    .bg-success {
+        background-color: #d4edda;
+        color: #155724;
+    }
+
+    .bg-danger {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+
+    .section {
+        margin-top: 30px;
+    }
+
+    .section h3 {
+        font-size: 1.5rem;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 8px;
+        margin-bottom: 10px;
+    }
+
+    ul.ingredient-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    ul.ingredient-list li {
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eee;
+        padding: 10px 0;
+    }
+
+    .actions {
+        display: flex;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        margin-top: 40px;
+    }
+
+    .btn {
+        text-decoration: none;
+        border: 2px solid transparent;
+        padding: 10px 16px;
+        font-size: 15px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary {
+        background: #f1f1f1;
+        color: #333;
+        border-color: #ccc;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+
+    .text-muted {
+        color: #888;
+        font-style: italic;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <!-- Header -->
+        <div class="card-header">
+            <h1 class="card-title">{{ recipe.title }}</h1>
         </div>
-        
+
+        <!-- Image -->
+        <div class="image-container">
+            {% if recipe.image %}
+                <img src="{{ recipe.image.url }}" alt="{{ recipe.title }}">
+            {% else %}
+                <div class="text-muted">
+                    <i class="fas fa-utensils" style="font-size: 3rem;"></i>
+                    <p>No image available</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Body -->
         <div class="card-body">
-            <div class="row">
-                <div class="col-md-5">
-                    {% if recipe.image %}
-                        <img src="{{ recipe.image.url }}" class="img-fluid rounded mb-3" alt="{{ recipe.title }}">
-                    {% else %}
-                        <div class="bg-light rounded d-flex align-items-center justify-content-center" style="height: 300px;">
-                            <p class="text-secondary mb-0">No image available</p>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="recipe-meta mb-3">
-                        <p class="mb-1"><strong>Author:</strong> {{ recipe.author.username }}</p>
-                        <p class="mb-1">
-                            <strong>Vegetarian:</strong> 
-                            <span class="badge {% if recipe.vegetarian %}bg-success{% else %}bg-danger{% endif %}">
-                                {{ recipe.vegetarian|yesno:"Yes,No" }}
-                            </span>
-                        </p>
-                        <p class="mb-0"><strong>Created On:</strong> {{ recipe.created_at|date:"F j, Y" }}</p>
-                    </div>
+            <!-- Metadata -->
+            <div class="meta">
+                <div>
+                    <p><strong>Author:</strong> {{ recipe.author.username }}</p>
+                    <p><strong>Created On:</strong> {{ recipe.created_at|date:"F j, Y" }}</p>
                 </div>
-                
-                <div class="col-md-7">
-                    <h3 class="border-bottom pb-2 mb-3">Description</h3>
-                    <div class="mb-4">
-                        <p>{{ recipe.description|linebreaks }}</p>
-                    </div>
-                    
-                    <h3 class="border-bottom pb-2 mb-3">Ingredients</h3>
-                    <div class="mb-4">
-                        {% if ingredients %}
-                            <ul class="list-group list-group-flush">
-                                {% for item in ingredients %}
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        <span>{{ item.ingredient.name }}</span>
-                                        <span class="badge bg-secondary rounded-pill">{{ item.quantity }}</span>
-                                    </li>
-                                {% endfor %}
-                            </ul>
+                <div>
+                    <p><strong>Vegetarian:</strong>
+                        {% if recipe.vegetarian %}
+                            <span class="badge bg-success">Yes</span>
                         {% else %}
-                            <p class="text-muted">No ingredients listed.</p>
+                            <span class="badge bg-danger">No</span>
                         {% endif %}
-                    </div>
-                    
-                    <h3 class="border-bottom pb-2 mb-3">Instructions</h3>
-                    <div class="mb-4">
-                        {{ recipe.instructions|linebreaks }}
-                    </div>
+                    </p>
                 </div>
+            </div>
+
+            <!-- Description -->
+            <div class="section">
+                <h3>Description</h3>
+                <p>{{ recipe.description|linebreaks }}</p>
+            </div>
+
+            <!-- Ingredients -->
+            <div class="section">
+                <h3>Ingredients</h3>
+                {% if ingredients %}
+                    <ul class="ingredient-list">
+                        {% for item in ingredients %}
+                            <li>
+                                <span>{{ item.ingredient.name }}</span>
+                                <span>{{ item.quantity }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No ingredients listed.</p>
+                {% endif %}
+            </div>
+
+            <!-- Instructions -->
+            <div class="section">
+                <h3>Instructions</h3>
+                <p>{{ recipe.instructions|linebreaks }}</p>
             </div>
         </div>
-        
-        <div class="card-footer bg-light">
-            <div class="d-flex justify-content-between">
-                <a href="{% url 'display_recipes' %}" class="btn btn-outline-secondary">
-                    <i class="bi bi-arrow-left"></i> Back to Recipes
-                </a>
-                <div>
-                    <a href="{% url 'update_recipe' recipe.id %}" class="btn btn-warning">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
-                    <a href="{% url 'delete_recipe' recipe.id %}" class="btn btn-danger">
-                        <i class="bi bi-trash"></i> Delete
-                    </a>
-                </div>
-            </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="actions">
+        <a href="{% url 'display_recipes' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Recipes
+        </a>
+        <div>
+            <a href="{% url 'update_recipe' recipe.id %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="{% url 'delete_recipe' recipe.id %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete
+            </a>
         </div>
     </div>
 </div>

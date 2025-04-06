@@ -79,10 +79,17 @@
                     <p><strong>Author:</strong> {{ recipe.author.username }}</p>
                     <p><strong>Vegetarian:</strong> {% if recipe.vegetarian %} Yes {% else %} No {% endif %}</p>
                     <p><strong>Created on:</strong> {{ recipe.created_at|date:"F d, Y" }}</p>
+                    {% if user == recipe.author %}
+                    <p><strong>Actions:</strong></p>
+                    
                     <a href="{% url 'update_recipe' recipe.id %}">Edit</a> |
                     <a href="{% url 'delete_recipe' recipe.id %}" onclick="return confirm('Are you sure?')">Delete</a>
+                    {% endif %}
+
                 </li>
             {% endfor %}
+
+            <a href="{% url 'create_recipe' %}" class="btn btn-primary">Create New Recipe</a>
         </ul>
     {% else %}
         <p class="no-recipes">No recipes available. <a href="{% url 'create_recipe' %}">Create one!</a></p>

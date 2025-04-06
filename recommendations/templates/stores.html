@@ -1,3 +1,5 @@
+{% extends 'layout.html'%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -457,6 +459,7 @@
         }
     </style>
 </head>
+{% block body %}
 <body>
     <header>
         <div class="container">
@@ -489,6 +492,15 @@
         // API Configuration
         const API_BASE_URL = '/recommendations/grocery_stores'; // Consider making this configurable
         
+        function escapeHtml(unsafe) {
+          return unsafe
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+      }
+
         async function getLocationAndFetchStores() {
             const errorMessage = document.getElementById('error-message');
             const loader = document.querySelector('.loadingspinner'); // Fixed selector to match the HTML
@@ -635,4 +647,5 @@
        
     </script>
 </body>
+{% endblock %}
 </html>
